@@ -42,6 +42,20 @@ def loginAuth():
         error = 'Invalid login'
         return render_template('login.html', error=error)
 
+# TODO: add register
+@app.route('/registerUser', methods=['GET', 'POST'])
+def registerUser():
+    return
+
+@app.route('/home')
+def home():
+    return render_template('index.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username')
+    return redirect('/login')
+
 if __name__ == '__main__':
     app.run('127.0.0.1', 5000, debug=True)
 
