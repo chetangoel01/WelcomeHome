@@ -4,55 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accept Donation</title>
-    <style>
-        table {
-            width: 70%;
-            border-collapse: collapse;
-            margin: 20px auto;
-            font-size: 18px;
-            text-align: left;
+    <script>
+        // Function to dynamically add piece input fields
+        function updatePieceInputs() {
+            const pieceCount = document.getElementById("piece_count").value || 1;
+            const piecesContainer = document.getElementById("pieces_container");
+
+            // Clear existing inputs
+            piecesContainer.innerHTML = "";
+
+            for (let i = 1; i <= pieceCount; i++) {
+                const pieceInputs = `
+                    <div>
+                        <h4>Piece ${i}</h4>
+                        <label>Description:</label>
+                        <input type="text" name="piece_description" required><br>
+                        <label>Length:</label>
+                        <input type="number" name="piece_length" required><br>
+                        <label>Width:</label>
+                        <input type="number" name="piece_width" required><br>
+                        <label>Height:</label>
+                        <input type="number" name="piece_height" required><br>
+                        <label>Room Number:</label>
+                        <input type="number" name="piece_room" required><br>
+                        <label>Shelf Number:</label>
+                        <input type="number" name="piece_shelf" required><br>
+                        <label>Notes:</label>
+                        <input type="text" name="piece_notes"><br>
+                    </div>
+                    <hr>
+                `;
+                piecesContainer.innerHTML += pieceInputs;
+            }
         }
-        table, th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    </script>
 </head>
 <body>
     <h1>Accept Donation</h1>
-
-    <!-- Flash Messages -->
+    <!-- Display flashed messages -->
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul>
                 {% for message in messages %}
-                    <li style="color: red;">{{ message }}</li>
+                    <li style="color: green;">{{ message }}</li>
                 {% endfor %}
             </ul>
         {% endif %}
     {% endwith %}
-
-    <!-- Form to Accept Donation -->
     <form method="POST" action="{{ url_for('accept_donation') }}">
-        <!-- Staff Validation -->
         <label for="staff_username">Staff Username:</label>
         <input type="text" id="staff_username" name="staff_username" required><br>
 
-        <!-- Donor Validation -->
         <label for="donor_username">Donor Username:</label>
         <input type="text" id="donor_username" name="donor_username" required><br>
 
-        <!-- Item Details -->
         <label for="item_description">Item Description:</label>
         <input type="text" id="item_description" name="item_description" required><br>
 
-        <label for="item_photo">Item Photo Filename:</label>
+        <label for="item_photo">Photo:</label>
         <input type="text" id="item_photo" name="item_photo"><br>
 
-        <label for="item_color">Item Color:</label>
+        <label for="item_color">Color:</label>
         <input type="text" id="item_color" name="item_color"><br>
 
         <label for="item_material">Material:</label>
@@ -61,36 +73,38 @@
         <label for="item_category">Main Category:</label>
         <input type="text" id="item_category" name="item_category" required><br>
 
-        <label for="item_subcategory">Sub Category:</label>
+        <label for="item_subcategory">Subcategory:</label>
         <input type="text" id="item_subcategory" name="item_subcategory" required><br>
 
-        <!-- Pieces -->
-        <h2>Pieces</h2>
-        <div id="pieces">
-            <label for="piece_description">Piece Description:</label>
-            <input type="text" id="piece_description" name="piece_description[]" required><br>
+        <!-- Allow user to specify the number of pieces -->
+        <label for="piece_count">Number of Pieces:</label>
+        <input type="number" id="piece_count" name="piece_count" value="1" min="1" onchange="updatePieceInputs()"><br>
 
-            <label for="piece_length">Length:</label>
-            <input type="number" id="piece_length" name="piece_length[]" required><br>
-
-            <label for="piece_width">Width:</label>
-            <input type="number" id="piece_width" name="piece_width[]" required><br>
-
-            <label for="piece_height">Height:</label>
-            <input type="number" id="piece_height" name="piece_height[]" required><br>
-
-            <label for="piece_room">Room Number:</label>
-            <input type="number" id="piece_room" name="piece_room[]" required><br>
-
-            <label for="piece_shelf">Shelf Number:</label>
-            <input type="number" id="piece_shelf" name="piece_shelf[]" required><br>
-
-            <label for="piece_notes">Notes:</label>
-            <input type="text" id="piece_notes" name="piece_notes[]"><br>
+        <!-- Container for dynamically added piece inputs -->
+        <div id="pieces_container">
+            <!-- By default, one piece form will load -->
+            <div>
+                <h4>Piece 1</h4>
+                <label>Description:</label>
+                <input type="text" name="piece_description" required><br>
+                <label>Length:</label>
+                <input type="number" name="piece_length" required><br>
+                <label>Width:</label>
+                <input type="number" name="piece_width" required><br>
+                <label>Height:</label>
+                <input type="number" name="piece_height" required><br>
+                <label>Room Number:</label>
+                <input type="number" name="piece_room" required><br>
+                <label>Shelf Number:</label>
+                <input type="number" name="piece_shelf" required><br>
+                <label>Notes:</label>
+                <input type="text" name="piece_notes"><br>
+            </div>
         </div>
 
-        <button type="submit">Submit Donation</button>
+        <button type="submit">Submit</button>
     </form>
+
     <a href="{{ url_for('home') }}">Back to Home</a>
 </body>
 </html>

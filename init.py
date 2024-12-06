@@ -139,6 +139,8 @@ def accept_donation_page():
     return render_template('accept_donation.html')
 @app.route('/accept_donation', methods=['GET', 'POST'])
 @app.route('/accept_donation', methods=['GET', 'POST'])
+@app.route('/accept_donation', methods=['GET', 'POST'])
+@app.route('/accept_donation', methods=['GET', 'POST'])
 def accept_donation():
     if request.method == 'POST':
         # Retrieve form data
@@ -150,7 +152,7 @@ def accept_donation():
         item_material = request.form['item_material']
         main_category = request.form['item_category']
         sub_category = request.form['item_subcategory']
-        pieces = zip(
+        pieces = list(zip(
             request.form.getlist('piece_description'),
             request.form.getlist('piece_length'),
             request.form.getlist('piece_width'),
@@ -158,7 +160,7 @@ def accept_donation():
             request.form.getlist('piece_room'),
             request.form.getlist('piece_shelf'),
             request.form.getlist('piece_notes')
-        )
+        ))
 
         # Validate staff member
         cursor = conn.cursor()
@@ -182,6 +184,7 @@ def accept_donation():
             (item_description, item_photo, item_color, item_material, True, main_category, sub_category)
         )
         item_id = cursor.lastrowid
+        print(f"Inserted ItemID: {item_id}")
 
         # Insert DonatedBy
         cursor.execute(
@@ -190,12 +193,17 @@ def accept_donation():
         )
 
         # Insert Pieces
+        piece_num = 1  # Start pieceNum at 1 for the new item
         for desc, length, width, height, room, shelf, notes in pieces:
+            # Skip blank entries for pieces to avoid bad data
+            if not desc.strip():
+                continue
             cursor.execute(
                 'INSERT INTO Piece (ItemID, pieceNum, pDescription, length, width, height, roomNum, shelfNum, pNotes) '
-                'VALUES (%s, (SELECT IFNULL(MAX(pieceNum), 0) + 1 FROM Piece WHERE ItemID = %s), %s, %s, %s, %s, %s, %s, %s)',
-                (item_id, item_id, desc, length, width, height, room, shelf, notes)
+                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                (item_id, piece_num, desc, length, width, height, room, shelf, notes)
             )
+            piece_num += 1
 
         conn.commit()
         cursor.close()
@@ -208,6 +216,7 @@ def accept_donation():
     donation_success = session.pop('donation_success', None)
     if donation_success:
         flash('Donation successfully recorded!')
+        return redirect(url_for('accept_donation'))
 
     return render_template('accept_donation.html')
 
