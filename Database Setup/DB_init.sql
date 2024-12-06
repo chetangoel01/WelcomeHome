@@ -30,7 +30,7 @@ CREATE TABLE Item (
     photo VARCHAR(20), -- BLOB is better here, but for simplicity, we change it to VARCHAR; For p3 implementation, we recommend you to implement as blob
     color VARCHAR(20),
     isNew BOOLEAN DEFAULT TRUE,
-    hasPieces BOOLEAN,
+    hasPieces BOOLEAN DEFAULT TRUE,
     material VARCHAR(50),
     mainCategory VARCHAR(50) NOT NULL,
     subCategory VARCHAR(50) NOT NULL,
