@@ -137,9 +137,7 @@ def find_order_items():
 @app.route('/accept_donation_page')
 def accept_donation_page():
     return render_template('accept_donation.html')
-@app.route('/accept_donation', methods=['GET', 'POST'])
-@app.route('/accept_donation', methods=['GET', 'POST'])
-@app.route('/accept_donation', methods=['GET', 'POST'])
+
 @app.route('/accept_donation', methods=['GET', 'POST'])
 def accept_donation():
     if request.method == 'POST':
@@ -147,8 +145,8 @@ def accept_donation():
         staff_username = request.form['staff_username']
         donor_username = request.form['donor_username']
         item_description = request.form['item_description']
-        item_photo = request.form.get('item_photo', None)
-        item_color = request.form.get('item_color', None)
+        item_photo = request.form.get('item_photo')
+        item_color = request.form.get('item_color')
         item_material = request.form['item_material']
         main_category = request.form['item_category']
         sub_category = request.form['item_subcategory']
@@ -193,7 +191,7 @@ def accept_donation():
         )
 
         # Insert Pieces
-        piece_num = 1  # Start pieceNum at 1 for the new item
+        piece_num = 1
         for desc, length, width, height, room, shelf, notes in pieces:
             # Skip blank entries for pieces to avoid bad data
             if not desc.strip():
