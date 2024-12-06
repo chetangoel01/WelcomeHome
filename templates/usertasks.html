@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Tasks</title>
+    <style>
+        table {
+            width: 70%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            font-size: 18px;
+            text-align: left;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .load-button {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Tasks</h1>
+    
+    <!-- Message above the button -->
+    <p>Click the button below to load your tasks.</p>
+    
+    <!-- Button to load tasks -->
+    <form action="{{ url_for('get_user_tasks') }}" method="GET">
+        <button type="submit" class="load-button">Load My Tasks</button>
+    </form>
+    
+    <!-- Display client tasks -->
+    {% if client %}
+        <h2>Tasks as Client</h2>
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Client Name</th>
+                <th>Order Notes</th>
+            </tr>
+            {% for task in client %}
+                <tr>
+                    <td>{{ task['orderID'] }}</td>
+                    <td>{{ task['orderDate'] }}</td>
+                    <td>{{ task['client'] }}</td>
+                    <td>{{ task['orderNotes'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- Display supervisor tasks -->
+    {% if supervisor %}
+        <h2>Tasks as Supervisor</h2>
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Supervisor Name</th>
+                <th>Order Notes</th>
+            </tr>
+            {% for task in supervisor %}
+                <tr>
+                    <td>{{ task['orderID'] }}</td>
+                    <td>{{ task['orderDate'] }}</td>
+                    <td>{{ task['supervisor'] }}</td>
+                    <td>{{ task['orderNotes'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- Display volunteer tasks -->
+    {% if volunteer %}
+        <h2>Volunteer Tasks</h2>
+        <table>
+            <tr>
+                <th>Role</th>
+                <th>Description</th>
+            </tr>
+            {% for task in volunteer %}
+                <tr>
+                    <td>{{ task['roleID'] }}</td>
+                    <td>{{ task['rDescription'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- Display donated items -->
+    {% if donated %}
+        <h2>Donated Items</h2>
+        <table>
+            <tr>
+                <th>Item ID</th>
+                <th>Donate Date</th>
+                <th>Description</th>
+            </tr>
+            {% for item in donated %}
+                <tr>
+                    <td>{{ item['ItemID'] }}</td>
+                    <td>{{ item['donateDate'] }}</td>
+                    <td>{{ item['iDescription'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- Display delivered items -->
+    {% if delivered %}
+        <h2>Delivered Items</h2>
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Status</th>
+                <th>Date Delivered</th>
+            </tr>
+            {% for delivery in delivered %}
+                <tr>
+                    <td>{{ delivery['orderID'] }}</td>
+                    <td>{{ delivery['status'] }}</td>
+                    <td>{{ delivery['date'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- Message for no matching tasks (only when button is clicked and data is empty) -->
+    {% if (client is none and supervisor is none and volunteer is none and donated is none and delivered is none) and request.args %}
+        <p>No tasks found for the current user.</p>
+    {% endif %}
+
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

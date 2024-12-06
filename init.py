@@ -224,7 +224,62 @@ def accept_donation():
 
 # TODO: Prepare order [IAN]
 
-# TODO: User's tasks [CHETAN]
+# TODO: User's tasks [CHETAN]: show all ordered the current (logged in) user has a relationship with (as a client, volunteer, etc) along with more relevant details
+@app.route('/userTasks_page', methods = ['GET'])
+def userTasks_page():
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('login_page'))
+    return render_template('usertasks.html')
+
+@app.route('/get_user_tasks', methods = ['GET'])
+def get_user_tasks():
+    cursor = conn.cursor()
+    username = session.get('username')
+    print(username)
+    cursor.execute('''
+        SELECT orderID, orderDate, orderNotes, supervisor, client
+        FROM Ordered
+        WHERE client = %s
+        ''', (username,))
+    client = cursor.fetchall()
+
+    cursor.execute('''
+        SELECT o.orderID, o.orderDate, o.orderNotes, o.supervisor, o.client
+        FROM Ordered o
+        WHERE o.supervisor = %s
+        ''', (username,))
+    supervisor = cursor.fetchall()
+
+    cursor.execute('''
+        SELECT a.userName, a.roleID, r.rDescription
+        FROM Act a
+        JOIN Role r ON a.roleID = r.roleID
+        WHERE a.userName = %s
+        ''', (username,))
+    volunteer = cursor.fetchall()
+
+    cursor.execute('''
+        SELECT d.ItemID, d.donateDate, i.iDescription
+        FROM DonatedBy d
+        JOIN Item i ON d.ItemID = i.ItemID
+        WHERE d.userName = %s
+        ''', (username,))
+    donated = cursor.fetchall()
+
+    cursor.execute('''
+        SELECT o.orderID, o.orderDate, d.status, d.date
+        FROM Delivered d
+        JOIN Ordered o ON d.orderID = o.orderID
+        WHERE d.userName = %s
+        ''', (username,))
+    print()
+    delivered = cursor.fetchall()
+    cursor.close()
+
+    print(client, supervisor, volunteer, donated, delivered)
+
+    return render_template('usertasks.html', client=client, supervisor=supervisor, volunteer=volunteer, donated=donated, delivered=delivered)
 
 # TODO: Rank system [CHETAN]
 
