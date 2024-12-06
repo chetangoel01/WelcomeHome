@@ -1,119 +1,117 @@
--- Clear Existing Data
+use donationdb;
+
+-- Clear existing data
 SET FOREIGN_KEY_CHECKS = 0;
-
-DELETE FROM Delivered;
-DELETE FROM ItemIn;
-DELETE FROM Ordered;
-DELETE FROM Piece;
-DELETE FROM DonatedBy;
-DELETE FROM Item;
-DELETE FROM Location;
-DELETE FROM Act;
-DELETE FROM Role;
-DELETE FROM PersonPhone;
-DELETE FROM Person;
-DELETE FROM Category;
-
+TRUNCATE TABLE Delivered;
+TRUNCATE TABLE ItemIn;
+TRUNCATE TABLE Ordered;
+TRUNCATE TABLE Piece;
+TRUNCATE TABLE DonatedBy;
+TRUNCATE TABLE Item;
+TRUNCATE TABLE Location;
+TRUNCATE TABLE Act;
+TRUNCATE TABLE Role;
+TRUNCATE TABLE PersonPhone;
+TRUNCATE TABLE Person;
+TRUNCATE TABLE Category;
 SET FOREIGN_KEY_CHECKS = 1;
 
+-- Insert dummy data
 
--- Insert into Category
-INSERT INTO Category (mainCategory, subCategory, catNotes)
-VALUES
-('Furniture', 'Chair', 'Seating furniture for all purposes'),
-('Furniture', 'Table', 'Various types of tables'),
-('Electronics', 'Laptop', 'Electronic devices used for computing'),
-('Electronics', 'Phone', 'Handheld communication devices');
+-- Category
+INSERT INTO Category VALUES 
+('Electronics', 'Phones', 'Smartphones and Mobile Devices'),
+('Electronics', 'Laptops', 'Portable Computers'),
+('Kitchen', 'Pots', 'Cooking Pots'),
+('Outdoor', 'Grills', 'Barbecue Grills'),
+('Furniture', 'Chairs', 'Seating Solutions'),
+('Furniture', 'Tables', 'Dining Tables'),
+('Books', 'Novels', 'Fictional Books'),
+('Books', 'Textbooks', 'Educational Books');
 
--- Insert into Person
-INSERT INTO Person (userName, password, fname, lname, email)
-VALUES
-('ian', 'password', 'Ian', 'Davoren', 'ian@nyu.edu'),
-('jdoe', 'password123', 'John', 'Doe', 'jdoe@example.com'),
-('asmith', 'securepass', 'Alice', 'Smith', 'asmith@example.com'),
-('bwayne', 'batman123', 'Bruce', 'Wayne', 'bwayne@example.com'),
-('ckent', 'superman321', 'Clark', 'Kent', 'ckent@example.com');
+-- Item
+INSERT INTO Item VALUES 
+(20001, 'iPhone 14', 'iphone.png', 'Black', TRUE, FALSE, 'Metal', 'Electronics', 'Phones'),
+(20002, 'MacBook Pro', 'macbook.png', 'Silver', TRUE, FALSE, 'Aluminum', 'Electronics', 'Laptops'),
+(30001, 'Cooking Pot', 'pot.png', 'Grey', FALSE, FALSE, 'Stainless Steel', 'Kitchen', 'Pots'),
+(40001, 'Charcoal Grill', 'grill.png', 'Black', TRUE, FALSE, 'Steel', 'Outdoor', 'Grills'),
+(50001, 'Dining Chair', 'chair.png', 'Brown', TRUE, TRUE, 'Wood', 'Furniture', 'Chairs'),
+(50002, 'Dining Table', 'table.png', 'White', TRUE, FALSE, 'Wood', 'Furniture', 'Tables'),
+(60001, 'War and Peace', 'warpeace.png', 'Blue', TRUE, FALSE, 'Paper', 'Books', 'Novels'),
+(60002, 'Calculus Textbook', 'calculus.png', 'Green', TRUE, FALSE, 'Paper', 'Books', 'Textbooks');
 
--- Insert into PersonPhone
-INSERT INTO PersonPhone (userName, phone)
-VALUES
-('jdoe', '1234567890'),
-('asmith', '5556667777'),
-('bwayne', '9998887777'),
-('ckent', '3332221111');
+-- Person
+INSERT INTO Person VALUES 
+('johndoe', 'password123', 'John', 'Doe', 'john.doe@example.com'),
+('janedoe', 'securepass', 'Jane', 'Doe', 'jane.doe@example.com'),
+('michaelb', 'mypass', 'Michael', 'Brown', 'michael.brown@example.com'),
+('sarahc', 'sarah123', 'Sarah', 'Connor', 'sarah.connor@example.com'),
+('alicew', 'alicepass', 'Alice', 'Walker', 'alice.walker@example.com'),
+('robertp', 'robertpass', 'Robert', 'Pattinson', 'robert.pattinson@example.com');
 
--- Insert into Role
-INSERT INTO Role (roleID, rDescription)
-VALUES
-('Staff', 'Full-time or part-time staff member'),
-('Volunteer', 'Volunteer worker'),
-('Client', 'Individual receiving services'),
-('Donor', 'Individual donating items');
+-- PersonPhone
+INSERT INTO PersonPhone VALUES 
+('johndoe', '1234567890'),
+('janedoe', '9876543210'),
+('michaelb', '5551234567'),
+('sarahc', '4445556666'),
+('alicew', '3334445555'),
+('robertp', '1112223333');
 
--- Insert into Act
-INSERT INTO Act (userName, roleID)
-VALUES
-('ian', 'Staff'),
-('jdoe', 'Staff'),
-('asmith', 'Volunteer'),
-('bwayne', 'Client'),
-('ckent', 'Donor');
+-- Role
+INSERT INTO Role VALUES 
+('1', 'Client'),
+('2', 'Staff'),
+('3', 'Volunteer'),
+('4', 'Donor');
 
--- Insert into Location
-INSERT INTO Location (roomNum, shelfNum, shelf, shelfDescription)
-VALUES
-(101, 1, 'A', 'Shelf A in Room 101'),
-(101, 2, 'B', 'Shelf B in Room 101'),
-(102, 1, 'A', 'Shelf A in Room 102'),
-(102, 2, 'B', 'Shelf B in Room 102');
+-- Act
+INSERT INTO Act VALUES 
+('johndoe', '1'),
+('janedoe', '2'),
+('michaelb', '3'),
+('sarahc', '4'),
+('alicew', '1'),
+('robertp', '2');
 
--- Insert into Item
-INSERT INTO Item (iDescription, photo, color, isNew, hasPieces, material, mainCategory, subCategory)
-VALUES
-('Office Chair', 'chair.jpg', 'Black', TRUE, TRUE, 'Metal', 'Furniture', 'Chair'),
-('Dining Table', 'table.jpg', 'Brown', TRUE, TRUE, 'Wood', 'Furniture', 'Table'),
-('Gaming Laptop', 'laptop.jpg', 'Silver', TRUE, TRUE, 'Plastic', 'Electronics', 'Laptop'),
-('Smartphone', 'phone.jpg', 'Gray', TRUE, TRUE, 'Glass', 'Electronics', 'Phone');
+-- Location
+INSERT INTO Location VALUES 
+(1, 1, 'Electronics Shelf', 'Shelf for storing electronic items'),
+(2, 1, 'Kitchen Shelf', 'Shelf for kitchen utensils and cookware'),
+(3, 1, 'Outdoor Shelf', 'Shelf for outdoor equipment'),
+(4, 1, 'Furniture Section', 'Area for storing furniture'),
+(5, 1, 'Books Section', 'Area for storing books');
 
--- Insert into DonatedBy
-INSERT INTO DonatedBy (ItemID, userName, donateDate)
-VALUES
-(1, 'ckent', '2023-01-15'),
-(2, 'ckent', '2023-02-20'),
-(3, 'ckent', '2023-03-10'),
-(4, 'ckent', '2023-04-05');
+-- Piece
+INSERT INTO Piece VALUES 
+(20001, 1, 'iPhone Body', 150, 75, 7, 1, 1, 'Main body of the iPhone'),
+(30001, 1, 'Pot Body', 300, 200, 150, 2, 1, 'Main cooking pot'),
+(50001, 1, 'Chair Frame', 600, 500, 700, 4, 1, 'Frame of the dining chair'),
+(50002, 1, 'Table Top', 1200, 800, 50, 4, 1, 'Top surface of the dining table'),
+(60001, 1, 'Book Cover', 20, 30, 5, 5, 1, 'Cover of the book'),
+(60002, 1, 'Book Spine', 20, 5, 50, 5, 1, 'Spine of the textbook');
 
--- Insert into Piece
-INSERT INTO Piece (ItemID, pieceNum, pDescription, length, width, height, roomNum, shelfNum, pNotes)
-VALUES
--- Office Chair (1 piece)
-(1, 1, 'Office Chair', 50, 50, 100, 101, 1, 'Ergonomic office chair'),
+-- DonatedBy
+INSERT INTO DonatedBy VALUES 
+(20001, 'johndoe', '2024-11-10'),
+(30001, 'janedoe', '2024-11-12'),
+(50001, 'michaelb', '2024-11-15'),
+(60001, 'alicew', '2024-11-16');
 
--- Dining Table (multiple pieces)
-(2, 1, 'Tabletop', 120, 60, 5, 101, 2, 'Main tabletop'),
-(2, 2, 'Leg 1', 10, 10, 70, 101, 2, 'Table leg'),
-(2, 3, 'Leg 2', 10, 10, 70, 101, 2, 'Table leg'),
-(2, 4, 'Leg 3', 10, 10, 70, 101, 2, 'Table leg'),
-(2, 5, 'Leg 4', 10, 10, 70, 101, 2, 'Table leg'),
+-- Ordered
+INSERT INTO Ordered VALUES 
+(70001, '2024-11-18', 'John ordered a phone', 'janedoe', 'johndoe'),
+(70002, '2024-11-19', 'Michael ordered a pot', 'sarahc', 'michaelb'),
+(70003, '2024-11-20', 'Alice ordered a book', 'robertp', 'alicew');
 
--- Gaming Laptop (1 piece)
-(3, 1, 'Laptop', 35, 25, 2, 102, 1, 'Gaming laptop with RGB keyboard'),
+-- ItemIn
+INSERT INTO ItemIn VALUES 
+(20001, 70001, TRUE),
+(30001, 70002, FALSE),
+(60001, 70003, TRUE);
 
--- Smartphone (1 piece)
-(4, 1, 'Smartphone', 15, 7, 1, 102, 2, 'High-end smartphone');
-
--- Insert into Ordered
-INSERT INTO Ordered (orderID, orderDate, orderNotes, supervisor, client)
-VALUES
-(1, '2023-05-01', 'Standard delivery', 'jdoe', 'bwayne');
-
--- Insert into ItemIn
-INSERT INTO ItemIn (ItemID, orderID, found)
-VALUES
-(1, 1, TRUE),
-(2, 1, TRUE);
-
--- Insert into Delivered
-INSERT INTO Delivered (userName, orderID, status, date)
-VALUES
-('asmith', 1, 'Delivered', '2023-05-03');
+-- Delivered
+INSERT INTO Delivered VALUES 
+('janedoe', 70001, 'DELIVERED', '2024-11-20'),
+('sarahc', 70002, 'PENDING', '2024-11-21'),
+('robertp', 70003, 'DELIVERED', '2024-11-22');

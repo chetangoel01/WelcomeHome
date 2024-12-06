@@ -27,7 +27,7 @@ CREATE TABLE Category (
 CREATE TABLE Item (
     ItemID INT NOT NULL AUTO_INCREMENT,
     iDescription TEXT,
-    photo VARCHAR(20), -- BLOB is better here, but for simplicity, we change it to VARCHAR; For p3 implementation, we recommend you to implement as blob
+    photo BLOB,
     color VARCHAR(20),
     isNew BOOLEAN DEFAULT TRUE,
     hasPieces BOOLEAN DEFAULT TRUE,
