@@ -23,7 +23,18 @@
 </head>
 <body>
     <h1>Find Single Item</h1>
-
+    <!-- Display flashed messages -->
+    {% if request.method == 'POST' %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li style="color: red;">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
     <!-- Form to input itemID -->
     <form method = "POST" action="{{ url_for('find_single_item') }}">
         <label for="item_id"> Enter Item ID:</label>

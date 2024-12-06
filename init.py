@@ -1,6 +1,28 @@
-from flask import Flask, render_template, request, session, url_for, redirect
+from flask import Flask, render_template, request, session, url_for, redirect, flash
 import pymysql.cursors
+import re
 
+def validate_input(input_data):
+    """
+    Validates user input for XSS and SQL injection prevention.
+    :param input_data: The user input to validate.
+    :return: (bool, str) - A tuple where the first value is True if valid, False otherwise, and the second value is the sanitized input.
+    """
+    if not isinstance(input_data, str):
+        return False, None
+
+    # Check for malicious patterns
+    forbidden_patterns = [
+        r"(--|\bOR\b|\bAND\b|;|#|')",  # Prevent SQL injection patterns
+        r"(<script>|<\/script>|<img|onerror|onload)",  # Prevent XSS
+    ]
+    for pattern in forbidden_patterns:
+        if re.search(pattern, input_data, re.IGNORECASE):
+            return False, None
+
+    # Sanitize input
+    sanitized_input = re.sub(r"[^\w\s@.-]", "", input_data)  # Allow alphanumeric, spaces, @, ., and -
+    return True, sanitized_input
 app = Flask(__name__)
 app.secret_key = 'secret key'
 
@@ -67,11 +89,18 @@ def find_single_item():
     pieces = []
     if request.method == 'POST':
         item_id = request.form['item_id']
+
+        # Check if item_id is valid
+        is_valid, sanitized_item_id = validate_input(item_id)
+        if not is_valid:
+            flash('Invalid query. Please try again.')
+            return render_template('find_single_item.html', pieces=[])
+
         cursor = conn.cursor()
         query = ('SELECT pieceNum, pDescription, roomNum, shelfNum, pNotes '
                  'FROM Piece '
                  'WHERE itemID = %s')
-        cursor.execute(query, (item_id,))
+        cursor.execute(query, (sanitized_item_id,))
         pieces = cursor.fetchall()
         cursor.close()
     return render_template('find_single_item.html', pieces=pieces)
