@@ -106,8 +106,35 @@ def find_single_item():
     return render_template('find_single_item.html', pieces=pieces)
 
 # TODO: Find order items [ELI]
+@app.route('/find_order_items_page')
+def find_order_items_page():
+    return render_template('find_order_items.html')
+
+@app.route('/find_order_items', methods=['GET', 'POST'])
+def find_order_items():
+    items =[]
+    if request.method == 'POST':
+        order_id = request.form['order_id']
+
+        # Check if item_id is valid
+        is_valid, sanitized_order_id = validate_input(order_id)
+        if not is_valid:
+            flash('Invalid query. Please try again.')
+            return render_template('find_order_items.html', items=[])
+
+        cursor = conn.cursor()
+        query = ('SELECT ItemIn.itemID, Piece.pieceNum, Piece.pDescription, '
+                 'Piece.roomNum, Piece.shelfNum, Piece.pNotes '
+                 'FROM ItemIn '
+                 'JOIN Piece ON ItemIn.itemID = Piece.itemID '
+                 'WHERE ItemIn.orderID = %s')
+        cursor.execute(query, (sanitized_order_id,))
+        items = cursor.fetchall()
+        cursor.close()
+    return render_template('find_order_items.html', items=items)
 
 # TODO: Accept donation [ELI]
+
 
 # TODO: Start an order [IAN]
 

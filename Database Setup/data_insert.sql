@@ -110,7 +110,8 @@ VALUES
 -- Insert into ItemIn
 INSERT INTO ItemIn (ItemID, orderID, found)
 VALUES
-(1, 1, TRUE);
+(1, 1, TRUE),
+(2, 1, TRUE);
 
 -- Insert into Delivered
 INSERT INTO Delivered (userName, orderID, status, date)

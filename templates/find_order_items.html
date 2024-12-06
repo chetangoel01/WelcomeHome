@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Order Items</title>
+        <style>
+        table {
+            width: 70%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            font-size: 18px;
+            text-align: left;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Find Order Items</h1>
+    <!-- Display flashed messages -->
+    {% if request.method == 'POST' %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li style="color: red;">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
+    <!-- Form to input orderID -->
+    <form method = "POST" action="{{ url_for('find_order_items') }}">
+        <label for="order_id"> Enter Order ID:</label>
+        <input type="text" id="order_id" name="order_id" required>
+        <button type="submit">Find Order Items</button>
+    </form>
+    <!-- Display the item details in table -->
+    {%  if items %}
+        <h2>Pieces Associated with Order ID</h2>
+        <table>
+            <tr>
+                <th>Item ID</th>
+                <th>Piece ID</th>
+                <th>Description</th>
+                <th>Room</th>
+                <th>Shelf</th>
+                <th>Notes</th>
+            </tr>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.itemID }}</td>
+                    <td>{{ item.pieceNum }}</td>
+                    <td>{{ item.pDescription }}</td>
+                    <td>{{ item.roomNum }}</td>
+                    <td>{{ item.shelfNum }}</td>
+                    <td>{{ item.pNotes }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- Message for no matching items -->
+    {% if not items and request.method == 'POST'%}
+        <p>No matching items found</p>
+    {% endif %}
+
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>
