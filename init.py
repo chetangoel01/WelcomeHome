@@ -56,6 +56,25 @@ def logout():
     session.pop('username')
     return redirect('/login')
 
+# TODO: Find single item [ELI]
+
+# TODO: Find order items [ELI]
+
+# TODO: Accept donation [ELI]
+
+# TODO: Start an order [IAN]
+
+# TODO: Add to current order [IAN]
+
+# TODO: Prepare order [IAN]
+
+# TODO: User's tasks [CHETAN]
+
+# TODO: Rank system [CHETAN]
+
+# TODO: Update enabled [CHETAN]
+
+
 if __name__ == '__main__':
     app.run('127.0.0.1', 5000, debug=True)
 
