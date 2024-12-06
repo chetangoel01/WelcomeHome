@@ -1,1 +1,16 @@
-<h1> Welcome {{username}} </h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Welcome, {{ username }}</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('find_single_item_page') }}">Find Single Item</a></li>
+        </ul>
+    </nav>
+</body>
+</html>

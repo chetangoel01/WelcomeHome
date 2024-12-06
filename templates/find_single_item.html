@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Single Item</title>
+    <style>
+        table {
+            width: 70%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            font-size: 18px;
+            text-align: left;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Find Single Item</h1>
+
+    <!-- Form to input itemID -->
+    <form method = "POST" action="{{ url_for('find_single_item') }}">
+        <label for="item_id"> Enter Item ID:</label>
+        <input type="text" id="item_id" name="item_id" required>
+        <button type="submit">Find Item</button>
+    </form>
+    <!-- Display the item details in table -->
+    {%  if pieces %}
+        <h2>Pieces Associated with Item ID</h2>
+        <table>
+            <tr>
+                <th>Piece ID</th>
+                <th>Description</th>
+                <th>Room</th>
+                <th>Shelf</th>
+                <th>Notes</th>
+            </tr>
+            {% for piece in pieces %}
+                <tr>
+                    <td>{{ piece['pieceNum'] }}</td>
+                    <td>{{ piece['pDescription'] }}</td>
+                    <td>{{ piece['roomNum'] }}</td>
+                    <td>{{ piece['shelfNum'] }}</td>
+                    <td>{{ piece['pNotes'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- Message for no matching items -->
+    {% if not pieces and request.method == 'POST'%}
+        <p>No matching items found</p>
+    {% endif %}
+
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

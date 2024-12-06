@@ -57,6 +57,24 @@ def logout():
     return redirect('/login')
 
 # TODO: Find single item [ELI]
+# route to find item webpage
+@app.route('/find_single_item_page')
+def find_single_item_page():
+    return render_template('find_single_item.html')
+
+@app.route('/find_single_item', methods=['GET', 'POST'])
+def find_single_item():
+    pieces = []
+    if request.method == 'POST':
+        item_id = request.form['item_id']
+        cursor = conn.cursor()
+        query = ('SELECT pieceNum, pDescription, roomNum, shelfNum, pNotes '
+                 'FROM Piece '
+                 'WHERE itemID = %s')
+        cursor.execute(query, (item_id,))
+        pieces = cursor.fetchall()
+        cursor.close()
+    return render_template('find_single_item.html', pieces=pieces)
 
 # TODO: Find order items [ELI]
 
