@@ -112,6 +112,6 @@ INSERT INTO ItemIn VALUES
 
 -- Delivered
 INSERT INTO Delivered VALUES 
-('janedoe', 70001, 'DELIVERED', '2024-11-20'),
-('sarahc', 70002, 'PENDING', '2024-11-21'),
-('robertp', 70003, 'DELIVERED', '2024-11-22');
+('michaelb', 70001, 'DELIVERED', '2024-11-20'),
+('michaelb', 70002, 'PENDING', '2024-11-21'),
+('michaelb', 70003, 'DELIVERED', '2024-11-22');
