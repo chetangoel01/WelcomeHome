@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, url_for, redirect, flash
 import pymysql.cursors
 import re
+import random
 
 def validate_input(input_data):
     """
@@ -48,6 +49,7 @@ def login_page():
 def loginAuth():
     username = request.form['username']
     password = request.form['password']
+    session['username'] = username
 
     cursor = conn.cursor()
 
@@ -219,6 +221,59 @@ def accept_donation():
     return render_template('accept_donation.html')
 
 # TODO: Start an order [IAN]
+
+@app.route('/start_order_page')
+def start_order_page():
+    return render_template('start_order.html')
+
+@app.route('/start_order', methods=['GET', 'POST'])
+def start_order():
+    if request.method == 'POST':
+        # Retrieve form data
+        staff_username = request.form['staff_username']
+        client_username = request.form['client_username']
+
+        # Validate staff member
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM Act WHERE userName = %s AND roleID = %s', (staff_username, '2'))
+        staff = cursor.fetchone()
+        if not staff:
+            flash('Invalid staff username.')
+            return render_template('start_order.html')
+
+        # Validate client
+        cursor.execute('SELECT * FROM Act WHERE userName = %s AND roleID = %s', (client_username, '1'))
+        client = cursor.fetchone()
+        if not client:
+            flash('Invalid client username.')
+            return render_template('start_order.html')
+
+
+        cursor.execute("SELECT orderID FROM Ordered")
+        #existing_ids = {row[0] for row in cursor.fetchall()}
+        
+        orders = cursor.fetchone()
+        
+        # Generate a unique 5-digit number
+        while True:
+            new_id = random.randint(10000, 99999)  
+            if new_id not in orders:
+                break
+        
+        session['start_order_numer'] = new_id
+
+        #item_id = cursor.lastrowid
+        print(f"Your orderID is: {session.get('start_order_numer')}")
+        
+        
+        conn.commit()
+        cursor.close()
+
+        return redirect(url_for('start_order'))
+
+    return render_template('start_order.html')
+
+
 
 # TODO: Add to current order [IAN]
 
