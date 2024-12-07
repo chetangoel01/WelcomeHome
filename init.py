@@ -236,7 +236,7 @@ def userTasks_page():
 def get_user_tasks():
     cursor = conn.cursor()
     username = session.get('username')
-    print(username)
+
     cursor.execute('''
         SELECT orderID, orderDate, orderNotes, supervisor, client
         FROM Ordered
@@ -273,15 +273,43 @@ def get_user_tasks():
         JOIN Ordered o ON d.orderID = o.orderID
         WHERE d.userName = %s
         ''', (username,))
-    print()
     delivered = cursor.fetchall()
+    
     cursor.close()
-
-    print(client, supervisor, volunteer, donated, delivered)
 
     return render_template('usertasks.html', client=client, supervisor=supervisor, volunteer=volunteer, donated=donated, delivered=delivered)
 
 # TODO: Rank system [CHETAN]
+@app.route('/volunteerRanking', methods=['GET'])
+def volunteerRankingPage():
+    return render_template('volunteer_ranking.html')
+
+
+@app.route('/get_volunteer_ranking', methods=['GET'])
+def get_volunteer_ranking():
+    start = request.args.get('start', None)
+    end = request.args.get('end', None)
+
+    cursor = conn.cursor()
+
+    # get donation count
+    cursor.execute('''
+        SELECT p.userName, p.fname, p.lname, COUNT(d.orderID) AS deliveries
+        FROM Person p 
+        JOIN Act a ON p.userName = a.userName
+        JOIN Role r ON a.roleID = r.roleID
+        JOIN Delivered d ON p.userName = d.userName
+        WHERE r.rDescription = 'Volunteer'
+        AND d.date BETWEEN %s AND %s
+        GROUP BY p.userName
+        ORDER BY deliveries DESC
+    ''', (start, end))
+    ranking = cursor.fetchall()
+    
+    cursor.close()
+
+    return render_template('volunteer_ranking.html', ranking=ranking)
+
 
 # TODO: Update enabled [CHETAN]
 
