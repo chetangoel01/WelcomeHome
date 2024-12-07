@@ -4,11 +4,11 @@ import re
 import random
 
 def validate_input(input_data):
-    """
+    '''
     Validates user input for XSS and SQL injection prevention.
     :param input_data: The user input to validate.
     :return: (bool, str) - A tuple where the first value is True if valid, False otherwise, and the second value is the sanitized input.
-    """
+    '''
     if not isinstance(input_data, str):
         return False, None
 
@@ -409,11 +409,56 @@ def updatePage():
 
 @app.route('/update_status', methods=['GET', 'POST'])
 def update_delivery_status():
-    cursor = conn.cursor()
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        orderID = request.form.get('orderID')
+        newStatus = request.form.get('newStatus')
+        username = session['username']
+        
+        if not orderID or not newStatus:
+            return redirect(url_for('updatePage'))
+        
+        cursor = conn.cursor()
 
+        cursor.execute('''
+            SELECT 1 
+            FROM Delivered
+            WHERE orderID = %s AND userName = %s
+        ''', (orderID, username))
+        is_deliverer = cursor.fetchone() is not None
 
+        cursor.execute('''
+            SELECT 1
+            FROM Ordered
+            WHERE orderID = %s AND supervisor = %s
+        ''', (orderID, username))
+        is_supervisor = cursor.fetchone() is not None
 
-    return
+        if not (is_deliverer or is_supervisor):
+            flash("Unauthorized.")
+            return redirect(url_for('updatePage'))
+
+        cursor.execute('''
+            UPDATE Delivered
+            SET status = %s
+            WHERE orderID = %s
+            AND (userName = %s OR %s IN (
+                SELECT supervisor FROM Ordered WHERE orderID = %s
+            ))
+        ''', (newStatus, orderID, username, username, orderID))
+        conn.commit()
+
+        if cursor.rowcount > 0:
+            flash("Delivery status updated successfully.")
+        else:
+            flash("No matching order found or no permission to update.")
+        conn.close()
+
+        return redirect(url_for('updatePage'))
+
+    return render_template('delivery_status.html')
 
 
 if __name__ == '__main__':
