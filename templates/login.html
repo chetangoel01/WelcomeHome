@@ -68,6 +68,12 @@
         .signup-link a:hover {
             text-decoration: underline;
         }
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -87,6 +93,9 @@
                 <p class="error"><strong>Error:</strong> {{error}}</p>
             {% endif %}
         </form>
+        <div class="signup-link">
+            <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
     </div>
 </body>
 </html>

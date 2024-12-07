@@ -65,14 +65,52 @@ def loginAuth():
     else:
         error = 'Invalid login'
         return render_template('login.html', error=error)
+    
+@app.route('/register', methods=['GET'])
+def register():
+    return render_template('register.html')
 
 # TODO: add register
-@app.route('/registerUser', methods=['GET', 'POST'])
+@app.route('/registerUser', methods=['POST'])
 def registerUser():
-    return
+    username = request.form.get('username')
+    password = request.form.get('password')
+    fname = request.form.get('fname')
+    lname = request.form.get('lname')
+    email = request.form.get('email')
+    role = request.form.get('role')
+
+    if not (username and password and fname and lname and email and role):
+        flash("Please fill out all fields.")
+        return redirect(url_for('register'))
+
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT userName FROM Person WHERE userName=%s", (username,))
+    user_exists = cursor.fetchone()
+
+    if user_exists:
+        flash("Username already taken, please choose another.")
+        return redirect(url_for('register'))
+
+    cursor.execute('''
+        INSERT INTO Person (userName, password, fname, lname, email)
+        VALUES (%s, %s, %s, %s, %s)
+    ''', (username, password, fname, lname, email))
+
+    cursor.execute('''
+        INSERT INTO act VALUES (%s, %s)
+    ''', (username, role))
+
+    cursor.close()
+    flash("Registration successful! Please log in.")
+
+    return render_template('login.html')
 
 @app.route('/home')
 def home():
+    if 'username' not in session:
+        return redirect(url_for('login')) 
     return render_template('index.html')
 
 @app.route('/logout')
@@ -279,7 +317,7 @@ def start_order():
 
 # TODO: Prepare order [IAN]
 
-# TODO: User's tasks [CHETAN]: show all ordered the current (logged in) user has a relationship with (as a client, volunteer, etc) along with more relevant details
+# TODO: User's tasks [CHETAN]
 @app.route('/userTasks_page', methods = ['GET'])
 def userTasks_page():
     username = session.get('username')
@@ -339,7 +377,6 @@ def get_user_tasks():
 def volunteerRankingPage():
     return render_template('volunteer_ranking.html')
 
-
 @app.route('/get_volunteer_ranking', methods=['GET'])
 def get_volunteer_ranking():
     start = request.args.get('start', None)
@@ -365,8 +402,18 @@ def get_volunteer_ranking():
 
     return render_template('volunteer_ranking.html', ranking=ranking)
 
-
 # TODO: Update enabled [CHETAN]
+@app.route('/deliveryStatus', methods=['GET'])
+def updatePage():
+    return render_template('/delivery_status.html')
+
+@app.route('/update_status', methods=['GET', 'POST'])
+def update_delivery_status():
+    cursor = conn.cursor()
+
+
+
+    return
 
 
 if __name__ == '__main__':
