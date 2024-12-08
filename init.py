@@ -331,6 +331,72 @@ def start_order():
 
 # TODO: Add to current order [IAN]
 
+def get_main_categories():
+    query = "SELECT DISTINCT mainCategory FROM Category"
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        return cursor.fetchall()
+
+# Function to fetch subcategories for a given main category
+def fetch_sub_categories_from_db(main_category):
+    query = "SELECT subCategory FROM Category WHERE mainCategory = %s"
+    with conn.cursor() as cursor:
+        cursor.execute(query, (main_category,))
+        return cursor.fetchall()
+
+# Route for the initial page
+@app.route('/add_to_order_page')
+def index():
+    return render_template('add_to_order.html', main_categories=get_main_categories())
+
+@app.route('/add_to_order', methods=['GET', 'POST'])
+def add_to_order():
+    cursor = conn.cursor()
+
+    main_categories = get_main_categories()
+    selected_main_category = None
+    subcategories = []
+    items = []
+    message = None
+
+    if request.method == 'POST':
+        # Handle main category selection
+        selected_main_category = request.form.get('main_category')
+        if selected_main_category:
+            cursor.execute(
+                "SELECT DISTINCT subCategory FROM Category WHERE mainCategory = %s",
+                (selected_main_category,)
+            )
+            subcategories = cursor.fetchall()
+
+        # Handle subcategory selection and retrieve items
+        selected_sub_category = request.form.get('sub_category')
+        if selected_sub_category:
+            cursor.execute( "SELECT * FROM Item WHERE itemID NOT IN (SELECT itemID FROM ItemIn) \
+                           AND mainCategory = %s AND subCatecory = %s"
+            )
+            items = cursor.fetchall()
+
+        # Handle itemID submission
+        item_id = request.form.get('item_id')
+        if item_id:
+            session['item_id'] = item_id
+            message = f"Item {item_id} has been added to the session."
+
+    conn.close()
+    return render_template(
+        'add_to_order.html',
+        main_categories=main_categories,
+        selected_main_category=selected_main_category,
+        subcategories=subcategories,
+        items=items,
+        message=message,
+    )
+
+
+
+
+
 # TODO: Prepare order [IAN]
 
 # TODO: User's tasks [CHETAN]
