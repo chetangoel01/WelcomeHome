@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, session, url_for, redirect, f
 import pymysql.cursors
 import re
 import random
+import hashlib
+import os
 
 def validate_input(input_data):
     '''
@@ -37,6 +39,14 @@ conn = pymysql.connect(
     cursorclass = pymysql.cursors.DictCursor
 )
 
+def salt_and_hash(salt, password):
+    if salt == -1:
+        salt = os.urandom(16)
+    else:
+        salt = bytes.fromhex(salt)  # Convert hexadecimal to bytes
+    hashed_password = hashlib.sha256(salt + password.encode('utf-8')).hexdigest()
+    return salt.hex(), hashed_password
+
 @app.route('/test')
 def health():
     return 'connected!'
@@ -49,19 +59,23 @@ def login_page():
 def loginAuth():
     username = request.form['username']
     password = request.form['password']
-    session['username'] = username
 
     cursor = conn.cursor()
-
-    query = 'SELECT * FROM person WHERE username = %s and password = %s'
-    cursor.execute(query, (username, password))
-
+    cursor.execute('SELECT password, salt FROM person WHERE username = %s', (username, ))
     data = cursor.fetchone()
-
     cursor.close()
+
     if (data):
-        session['username'] = username
-        return redirect(url_for('home'))
+        salt = data['salt']
+        hashed_password = data['password']
+
+        _, check_hash = salt_and_hash(salt, password)
+        if check_hash == hashed_password:
+            session['username'] = username
+            return redirect(url_for('home'))
+        else:
+            error = 'Invalid login'
+            return render_template('login.html', error=error)
     else:
         error = 'Invalid login'
         return render_template('login.html', error=error)
@@ -83,6 +97,8 @@ def registerUser():
     if not (username and password and fname and lname and email and role):
         flash("Please fill out all fields.")
         return redirect(url_for('register'))
+    
+    salt, hashed_password = salt_and_hash(-1, password)
 
     cursor = conn.cursor()
 
@@ -94,9 +110,9 @@ def registerUser():
         return redirect(url_for('register'))
 
     cursor.execute('''
-        INSERT INTO Person (userName, password, fname, lname, email)
-        VALUES (%s, %s, %s, %s, %s)
-    ''', (username, password, fname, lname, email))
+        INSERT INTO Person (userName, password, salt, fname, lname, email)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    ''', (username, hashed_password, salt, fname, lname, email))
 
     cursor.execute('''
         INSERT INTO act VALUES (%s, %s)
