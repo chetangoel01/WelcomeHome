@@ -97,7 +97,7 @@ def registerUser():
     if not (username and password and fname and lname and email and role):
         flash("Please fill out all fields.")
         return redirect(url_for('register'))
-    
+
     salt, hashed_password = salt_and_hash(-1, password)
 
     cursor = conn.cursor()
@@ -109,19 +109,19 @@ def registerUser():
         flash("Username already taken, please choose another.")
         return redirect(url_for('register'))
 
-    cursor.execute('''
-        INSERT INTO Person (userName, password, salt, fname, lname, email)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    ''', (username, hashed_password, salt, fname, lname, email))
+    cursor.execute(
+        'INSERT INTO Person (userName, password, salt, fname, lname, email) '
+        'VALUES (%s, %s, %s, %s, %s, %s)'
+        , (username, hashed_password, salt, fname, lname, email))
 
-    cursor.execute('''
-        INSERT INTO act VALUES (%s, %s)
-    ''', (username, role))
-
+    cursor.execute(
+        'INSERT INTO Act (userName, roleID) VALUES (%s, %s)', (username, role)
+    )
+    conn.commit()
     cursor.close()
     flash("Registration successful! Please log in.")
 
-    return render_template('login.html')
+    return redirect(url_for('login_page'))
 
 @app.route('/home')
 def home():
@@ -218,14 +218,14 @@ def accept_donation():
 
         # Validate staff member
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM Act WHERE userName = %s AND roleID = %s', (staff_username, 'Staff'))
+        cursor.execute('SELECT * FROM Act WHERE userName = %s AND roleID = %s', (staff_username, '2'))
         staff = cursor.fetchone()
         if not staff:
             flash('Invalid staff username.')
             return render_template('accept_donation.html')
 
         # Validate donor
-        cursor.execute('SELECT * FROM Act WHERE userName = %s AND roleID = %s', (donor_username, 'Donor'))
+        cursor.execute('SELECT * FROM Act WHERE userName = %s AND roleID = %s', (donor_username, '4'))
         donor = cursor.fetchone()
         if not donor:
             flash('Invalid donor username.')
