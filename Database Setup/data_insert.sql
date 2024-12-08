@@ -42,12 +42,12 @@ INSERT INTO Item VALUES
 
 -- Person
 INSERT INTO Person VALUES 
-('johndoe', 'password123', 'John', 'Doe', 'john.doe@example.com'),
-('janedoe', 'securepass', 'Jane', 'Doe', 'jane.doe@example.com'),
-('michaelb', 'mypass', 'Michael', 'Brown', 'michael.brown@example.com'),
-('sarahc', 'sarah123', 'Sarah', 'Connor', 'sarah.connor@example.com'),
-('alicew', 'alicepass', 'Alice', 'Walker', 'alice.walker@example.com'),
-('robertp', 'robertpass', 'Robert', 'Pattinson', 'robert.pattinson@example.com');
+('johndoe', '729921fe612577672d19c876783e5ccb', '993a1259776cbffdd84ebab034545d9da656ba588491193f8ce556cc4462e604', 'John', 'Doe', 'john.doe@example.com'),
+('janedoe', '588925961c9f0ec683ca6a41d0224398', 'a845a2fbed12fe9458a845654ceb926d5a1d40af9e3115723a835358d8bcb105', 'Jane', 'Doe', 'jane.doe@example.com'),
+('michaelb', '8661a9f90cc7c40c2072ee56e09a18fa', '6c12465ed98c39a176b36f67b2353428a4fc9445d0d1f7516e0c39ee972020e3','Michael', 'Brown', 'michael.brown@example.com'),
+('sarahc', '7feaeee42b710771bb3c6479444dcf4d', '8c0d9000274335d3e7d654a3772868d880ad548f879454656b8416e80d853dfe', 'Sarah', 'Connor', 'sarah.connor@example.com'),
+('alicew', '8462ea598d926563b53fe599c0e2bba2', '8360ed1c20455b69168c5da687ff4991ed1079c1e8dd961e9dfcb6e7e8f07886', 'Alice', 'Walker', 'alice.walker@example.com'),
+('robertp', 'a8a3e39131d4bb54e92ccdefc9919290', '9a3233f8c3111844f8da50e830fdf67b50b507d277ccc2218076e5098c6a2ac5', 'Robert', 'Pattinson', 'robert.pattinson@example.com');
 
 -- PersonPhone
 INSERT INTO PersonPhone VALUES 
