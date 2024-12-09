@@ -244,7 +244,13 @@ def accept_donation():
             )
         )
         # Check that every field has an input
-        if not (donor_username and item_description and item_material and main_category and sub_category):
+        if not (
+            donor_username
+            and item_description
+            and item_material
+            and main_category
+            and sub_category
+        ):
             flash("Please fill out all required fields.")
             return render_template("accept_donation.html")
 
@@ -586,28 +592,6 @@ def get_user_tasks():
 
     cursor.execute(
         """
-        SELECT a.userName, a.roleID, r.rDescription
-        FROM Act a
-        JOIN Role r ON a.roleID = r.roleID
-        WHERE a.userName = %s
-        """,
-        (username,),
-    )
-    volunteer = cursor.fetchall()
-
-    cursor.execute(
-        """
-        SELECT d.ItemID, d.donateDate, i.iDescription
-        FROM DonatedBy d
-        JOIN Item i ON d.ItemID = i.ItemID
-        WHERE d.userName = %s
-        """,
-        (username,),
-    )
-    donated = cursor.fetchall()
-
-    cursor.execute(
-        """
         SELECT o.orderID, o.orderDate, d.status, d.date
         FROM Delivered d
         JOIN Ordered o ON d.orderID = o.orderID
@@ -623,8 +607,6 @@ def get_user_tasks():
         "usertasks.html",
         client=client,
         supervisor=supervisor,
-        volunteer=volunteer,
-        donated=donated,
         delivered=delivered,
     )
 

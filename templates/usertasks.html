@@ -77,42 +77,6 @@
         </table>
     {% endif %}
 
-    <!-- Display volunteer tasks -->
-    {% if volunteer %}
-        <h2>Volunteer Tasks</h2>
-        <table>
-            <tr>
-                <th>Role</th>
-                <th>Description</th>
-            </tr>
-            {% for task in volunteer %}
-                <tr>
-                    <td>{{ task['roleID'] }}</td>
-                    <td>{{ task['rDescription'] }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
-
-    <!-- Display donated items -->
-    {% if donated %}
-        <h2>Donated Items</h2>
-        <table>
-            <tr>
-                <th>Item ID</th>
-                <th>Donate Date</th>
-                <th>Description</th>
-            </tr>
-            {% for item in donated %}
-                <tr>
-                    <td>{{ item['ItemID'] }}</td>
-                    <td>{{ item['donateDate'] }}</td>
-                    <td>{{ item['iDescription'] }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
-
     <!-- Display delivered items -->
     {% if delivered %}
         <h2>Delivered Items</h2>
