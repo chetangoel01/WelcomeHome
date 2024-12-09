@@ -224,7 +224,6 @@ def accept_donation_page():
 def accept_donation():
     if request.method == "POST":
         # Retrieve form data
-        staff_username = request.form["staff_username"]
         donor_username = request.form["donor_username"]
         item_description = request.form["item_description"]
         item_photo = request.form.get("item_photo")
@@ -246,13 +245,14 @@ def accept_donation():
 
         # Validate staff member
         cursor = conn.cursor()
+        username = session.get("username")
         cursor.execute(
             "SELECT * FROM Act WHERE userName = %s AND roleID = %s",
-            (staff_username, "2"),
+            (username, "2"),
         )
         staff = cursor.fetchone()
         if not staff:
-            flash("Invalid staff username.")
+            flash("Must be staff to access.")
             return render_template("accept_donation.html")
 
         # Validate donor
