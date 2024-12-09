@@ -55,6 +55,10 @@ def salt_and_hash(salt, password):
     return salt.hex(), hashed_password
 
 
+# route to login page initially
+@app.route("/")
+def index():
+    return redirect(url_for("login_page"))
 @app.route("/test")
 def health():
     return "connected!"
@@ -210,12 +214,10 @@ def find_order_items():
         cursor.close()
     return render_template("find_order_items.html", items=items)
 
-
 # Accept donation [ELI]
 @app.route("/accept_donation_page")
 def accept_donation_page():
     return render_template("accept_donation.html")
-
 
 @app.route("/accept_donation", methods=["GET", "POST"])
 def accept_donation():
