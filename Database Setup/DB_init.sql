@@ -102,7 +102,7 @@ CREATE TABLE Piece (
 );
 
 CREATE TABLE Ordered (
-    orderID INT NOT NULL AUTO_INCREMENT,
+    orderID INT NOT NULL,
     orderDate DATE NOT NULL,
     orderNotes VARCHAR(200),
     supervisor VARCHAR(50) NOT NULL,

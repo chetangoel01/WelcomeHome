@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Selection</title>
+    <style>
+        table {
+            width: 70%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            font-size: 18px;
+            text-align: left;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <h1>Category Selection</h1>
@@ -19,9 +35,7 @@
                 </option>
             {% endfor %}
         </select>
-    </form>
-    
-    <form method="POST">
+
         <!-- Subcategory Dropdown -->
         <label for="sub_category">Subcategory:</label>
         <select name="sub_category" id="sub_category">
@@ -30,34 +44,85 @@
                 <option value="{{ subcategory }}">{{ subcategory }}</option>
             {% endfor %}
         </select>
-        <button type="submit">Show Items</button>
+        <button type="submit" name="action" value="show_items">Show Items</button>
     </form>
     
     <!-- Display Items Table -->
     {% if items %}
-        <table>
+    <table>
+        <thead>
             <tr>
                 <th>Item ID</th>
-                <th>Name</th>
                 <th>Description</th>
+                <th>Photo</th>
+                <th>Color</th>
+                <th>Is New</th>
+                <th>Has Pieces</th>
+                <th>Material</th>
+                <th>Main Category</th>
+                <th>Sub Category</th>
             </tr>
+        </thead>
+        <tbody>
             {% for item in items %}
-                <tr>
-                    <td>{{ item[0] }}</td>
-                    <td>{{ item[1] }}</td>
-                    <td>{{ item[2] }}</td>
-                </tr>
+            <tr>
+                <td>{{ item['ItemID'] }}</td>
+                <td>{{ item['iDescription'] }}</td>
+                <td><img src="{{ url_for('static', filename=item['photo']) }}" alt="Item Image" width="50"></td>
+                <td>{{ item['color'] }}</td>
+                <td>{{ 'Yes' if item['isNew'] else 'No' }}</td>
+                <td>{{ 'Yes' if item['hasPieces'] else 'No' }}</td>
+                <td>{{ item['material'] }}</td>
+                <td>{{ item['mainCategory'] }}</td>
+                <td>{{ item['subCategory'] }}</td>
+            </tr>
             {% endfor %}
-        </table>
+        </tbody>
+    </table>
     {% endif %}
     
-    <!-- Textbox for Item ID -->
+    <!-- Add Item Form -->
     <form method="POST">
         <label for="item_id">Enter Item ID:</label>
         <input type="text" name="item_id" id="item_id">
         <button type="submit">Add Item</button>
     </form>
-    
+
+    <!-- Display Order Items Table -->
+    {% if order_items %}
+    <h2>Items in Order</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Item ID</th>
+                <th>Description</th>
+                <th>Photo</th>
+                <th>Color</th>
+                <th>Is New</th>
+                <th>Has Pieces</th>
+                <th>Material</th>
+                <th>Main Category</th>
+                <th>Sub Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order_item in order_items %}
+            <tr>
+                <td>{{ order_item['ItemID'] }}</td>
+                <td>{{ order_item['iDescription'] }}</td>
+                <td><img src="{{ url_for('static', filename=order_item['photo']) }}" alt="Item Image" width="50"></td>
+                <td>{{ order_item['color'] }}</td>
+                <td>{{ 'Yes' if order_item['isNew'] else 'No' }}</td>
+                <td>{{ 'Yes' if order_item['hasPieces'] else 'No' }}</td>
+                <td>{{ order_item['material'] }}</td>
+                <td>{{ order_item['mainCategory'] }}</td>
+                <td>{{ order_item['subCategory'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
     <!-- Display Message -->
     {% if message %}
         <p>{{ message }}</p>

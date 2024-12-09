@@ -10,47 +10,18 @@
     <nav>
         <ul>
             <li><a href="{{ url_for('find_single_item_page') }}">Find Single Item</a></li>
-        </ul>
-    </nav>
-    <nav>
-        <ul>
             <li><a href="{{ url_for('find_order_items') }}">Find Order Items</a></li>
-        </ul>
-    </nav>
-    <nav>
-        <ul>
             <li><a href="{{ url_for('accept_donation') }}">Accept Donation</a></li>
-        </ul>
-    </nav>
-    <nav>
-        <ul>
             <li><a href="{{ url_for('userTasks_page') }}">List User Tasks</a></li>
-        </ul>
-    </nav>
-    <nav>
-        <ul>
             <li><a href="{{ url_for('volunteerRankingPage') }}">List Volunteer Rankings</a></li>
-        </ul>
-    </nav>
-    <nav>
-        <ul>
             <li><a href="{{ url_for('start_order') }}">Start Order</a></li>
-        </ul>
-    </nav>
-    <nav>
-        <ul>
             <li><a href="{{ url_for('updatePage') }}">Update a delivery</a></li>
-        </ul>
-    </nav>
-    <nav>
-        <ul>
             <li><a href="{{ url_for('add_to_order') }}">Add To Order</a></li>
-        </ul>
-    </nav>
-    <nav>
-        <ul>
             <li><a href="{{ url_for('yearreport') }}">Year Report</a></li>
         </ul>
     </nav>
+    <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit">Logout</button>
+    </form>
 </body>
 </html>
