@@ -65,10 +65,10 @@ def login_page():
     return render_template("login.html")
 
 
-
 @app.route("/")
 def index():
     return render_template("login.html")
+
 
 @app.route("/loginAuth", methods=["GET", "POST"])
 def loginAuth():
@@ -398,6 +398,18 @@ def start_order():
     return render_template("start_order.html")
 
 
+def get_main_categories():
+    main_categories = []
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+        SELECT DISTINCT mainCategory FROM Category
+        """
+        )
+        main_categories = [item["mainCategory"] for item in cursor.fetchall()]
+        return main_categories
+
+
 # Add to current order [IAN]
 @app.route("/add_to_order_page")
 def order_page():
@@ -407,14 +419,7 @@ def order_page():
 @app.route("/add_to_order", methods=["GET", "POST"])
 def add_to_order():
 
-    main_categories = []
-    with conn.cursor() as cursor:
-        cursor.execute(
-            """
-        SELECT DISTINCT mainCategory FROM Category
-        """
-        )
-        main_categories = [item["mainCategory"] for item in cursor.fetchall()]
+    main_categories = get_main_categories()
 
     selected_main_category = None
     subcategories = []
@@ -525,11 +530,9 @@ def yearreport():
         """,
         (current_year,),
     )
-    #clients_served = cursor.fetchall()
+    # clients_served = cursor.fetchall()
     clients_servedz = cursor.fetchall()
-    clients_served = [(row['COUNT(client)']) for row in clients_servedz]
-
-
+    clients_served = [(row["COUNT(client)"]) for row in clients_servedz]
 
     cursor.execute(
         """
@@ -540,11 +543,11 @@ def yearreport():
         """,
         (current_year,),
     )
-    #categories_served = cursor.fetchall()
+    # categories_served = cursor.fetchall()
     categories_servedz = cursor.fetchall()
-    categories_served = [(row['mainCategory'], row['COUNT(ItemID)']) for row in categories_servedz]
-
-
+    categories_served = [
+        (row["mainCategory"], row["COUNT(ItemID)"]) for row in categories_servedz
+    ]
 
     cursor.execute(
         """
@@ -553,10 +556,8 @@ def yearreport():
         WHERE YEAR(orderDate) = 2024
         """
     )
-    #item_des = cursor.fetchall()
-    item_des = [item['iDescription'] for item in cursor.fetchall()]
-
-
+    # item_des = cursor.fetchall()
+    item_des = [item["iDescription"] for item in cursor.fetchall()]
 
     cursor.close()
 
