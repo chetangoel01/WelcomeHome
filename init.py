@@ -55,10 +55,6 @@ def salt_and_hash(salt, password):
     return salt.hex(), hashed_password
 
 
-# route to login page initially
-@app.route("/")
-def index():
-    return redirect(url_for("login_page"))
 @app.route("/test")
 def health():
     return "connected!"
@@ -68,6 +64,11 @@ def health():
 def login_page():
     return render_template("login.html")
 
+
+
+@app.route("/")
+def index():
+    return render_template("login.html")
 
 @app.route("/loginAuth", methods=["GET", "POST"])
 def loginAuth():
@@ -524,7 +525,11 @@ def yearreport():
         """,
         (current_year,),
     )
-    clients_served = cursor.fetchall()
+    #clients_served = cursor.fetchall()
+    clients_servedz = cursor.fetchall()
+    clients_served = [(row['COUNT(client)']) for row in clients_servedz]
+
+
 
     cursor.execute(
         """
@@ -535,7 +540,11 @@ def yearreport():
         """,
         (current_year,),
     )
-    categories_served = cursor.fetchall()
+    #categories_served = cursor.fetchall()
+    categories_servedz = cursor.fetchall()
+    categories_served = [(row['mainCategory'], row['COUNT(ItemID)']) for row in categories_servedz]
+
+
 
     cursor.execute(
         """
@@ -544,7 +553,10 @@ def yearreport():
         WHERE YEAR(orderDate) = 2024
         """
     )
-    item_des = cursor.fetchall()
+    #item_des = cursor.fetchall()
+    item_des = [item['iDescription'] for item in cursor.fetchall()]
+
+
 
     cursor.close()
 
