@@ -214,10 +214,12 @@ def find_order_items():
         cursor.close()
     return render_template("find_order_items.html", items=items)
 
+
 # Accept donation [ELI]
 @app.route("/accept_donation_page")
 def accept_donation_page():
     return render_template("accept_donation.html")
+
 
 @app.route("/accept_donation", methods=["GET", "POST"])
 def accept_donation():

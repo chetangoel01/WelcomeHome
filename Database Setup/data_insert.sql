@@ -19,7 +19,6 @@ DELETE FROM Category;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Insert dummy data
-
 -- Category
 INSERT INTO Category VALUES 
 ('Electronics', 'Phones', 'Smartphones and Mobile Devices'),
@@ -33,14 +32,14 @@ INSERT INTO Category VALUES
 
 -- Item
 INSERT INTO Item VALUES 
-(20001, 'iPhone 14', 'iphone.png', 'Black', TRUE, FALSE, 'Metal', 'Electronics', 'Phones'),
-(20002, 'MacBook Pro', 'macbook.png', 'Silver', TRUE, FALSE, 'Aluminum', 'Electronics', 'Laptops'),
-(30001, 'Cooking Pot', 'pot.png', 'Grey', FALSE, FALSE, 'Stainless Steel', 'Kitchen', 'Pots'),
-(40001, 'Charcoal Grill', 'grill.png', 'Black', TRUE, FALSE, 'Steel', 'Outdoor', 'Grills'),
-(50001, 'Dining Chair', 'chair.png', 'Brown', TRUE, TRUE, 'Wood', 'Furniture', 'Chairs'),
-(50002, 'Dining Table', 'table.png', 'White', TRUE, FALSE, 'Wood', 'Furniture', 'Tables'),
-(60001, 'War and Peace', 'warpeace.png', 'Blue', TRUE, FALSE, 'Paper', 'Books', 'Novels'),
-(60002, 'Calculus Textbook', 'calculus.png', 'Green', TRUE, FALSE, 'Paper', 'Books', 'Textbooks');
+(20001, 'iPhone 14', 'iphone.png', 'Black', TRUE, TRUE, 'Metal', 'Electronics', 'Phones'),
+(20002, 'MacBook Pro', 'macbook.png', 'Silver', TRUE, TRUE, 'Aluminum', 'Electronics', 'Laptops'),
+(30001, 'Cooking Pot', 'pot.png', 'Grey', FALSE, TRUE, 'Stainless Steel', 'Kitchen', 'Pots'),
+(40001, 'Charcoal Grill', 'grill.png', 'Black', TRUE, TRUE, 'Steel', 'Outdoor', 'Grills'),
+(50001, 'Dining Chair', 'chair.png', 'Brown', FALSE, TRUE, 'Wood', 'Furniture', 'Chairs'),
+(50002, 'Dining Table', 'table.png', 'White', TRUE, TRUE, 'Wood', 'Furniture', 'Tables'),
+(60001, 'War and Peace', 'warpeace.png', 'Blue', FALSE, TRUE, 'Paper', 'Books', 'Novels'),
+(60002, 'Calculus Textbook', 'calculus.png', 'Green', TRUE, TRUE, 'Paper', 'Books', 'Textbooks');
 
 -- Person
 INSERT INTO Person VALUES 
@@ -85,11 +84,20 @@ INSERT INTO Location VALUES
 (5, 1, 'Books Section', 'Area for storing books');
 
 -- Piece
-INSERT INTO Piece VALUES 
-(20001, 1, 'iPhone Body', 150, 75, 7, 1, 1, 'Main body of the iPhone'),
+INSERT INTO Piece VALUES
+(20001, 1, 'iPhone Body', 150, 75, 7, 1, 1, 'iPhone'),
+(20002, 1, 'MacBook Body', 1200, 800, 50, 1, 1, 'MacBook'),
 (30001, 1, 'Pot Body', 300, 200, 150, 2, 1, 'Main cooking pot'),
+(30001, 2, 'Pot Lid', 300, 200, 50, 2, 1, 'Lid of the cooking pot'),
+(40001, 1, 'Grill Body', 600, 400, 300, 3, 1, 'Main body of the grill'),
+(40001, 2, 'Grill Grate', 600, 400, 10, 3, 1, 'Grate of the grill'),
 (50001, 1, 'Chair Frame', 600, 500, 700, 4, 1, 'Frame of the dining chair'),
+(50001, 2, 'Chair Cushion', 600, 500, 50, 4, 1, 'Cushion of the dining chair'),
 (50002, 1, 'Table Top', 1200, 800, 50, 4, 1, 'Top surface of the dining table'),
+(50002, 2, 'Table Leg 1', 50, 50, 700, 4, 1, 'First leg of the dining table'),
+(50002, 3, 'Table Leg 2', 50, 50, 700, 4, 1, 'Second leg of the dining table'),
+(50002, 4, 'Table Leg 3', 50, 50, 700, 4, 1, 'Third leg of the dining table'),
+(50002, 5, 'Table Leg 4', 50, 50, 700, 4, 1, 'Fourth leg of the dining table'),
 (60001, 1, 'Book Cover', 20, 30, 5, 5, 1, 'Cover of the book'),
 (60002, 1, 'Book Spine', 20, 5, 50, 5, 1, 'Spine of the textbook');
 
