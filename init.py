@@ -322,6 +322,9 @@ def accept_donation():
 
 @app.route("/start_order_page")
 def start_order_page():
+    username = session.get("username")
+    if not username:
+        return redirect(url_for("login_page"))
     return render_template("start_order.html")
 
 
@@ -329,14 +332,16 @@ def start_order_page():
 def start_order():
     if request.method == "POST":
         # Retrieve form data
-        staff_username = request.form["staff_username"]
+        #staff_username = request.form["staff_username"]
         client_username = request.form["client_username"]
 
         # Validate staff member
+
         cursor = conn.cursor()
+        username = session.get("username")
         cursor.execute(
             "SELECT * FROM Act WHERE userName = %s AND roleID = %s",
-            (staff_username, "2"),
+            (username, "2"),
         )
         staff = cursor.fetchone()
         if not staff:
@@ -372,7 +377,7 @@ def start_order():
         conn.commit()
         cursor.close()
 
-        return redirect(url_for("start_order"))
+        return redirect(url_for("add_to_order"))
 
     return render_template("start_order.html")
 

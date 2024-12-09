@@ -19,9 +19,7 @@
         {% endif %}
     {% endwith %}
     <form method="POST" action="{{ url_for('start_order') }}">
-        <label for="staff_username">Staff Username:</label>
-        <input type="text" id="staff_username" name="staff_username" required><br>
-
+        
         <label for="client_username">Client Username:</label>
         <input type="text" id="client_username" name="client_username" required><br>
 
