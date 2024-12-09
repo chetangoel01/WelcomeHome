@@ -148,10 +148,10 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/logout")
+@app.route("/logout", methods=["GET", "POST"])
 def logout():
     session.clear()
-    return redirect("/login")
+    return render_template("login.html")
 
 
 # Find single item [ELI]
