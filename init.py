@@ -519,44 +519,7 @@ def yearreport():
                            item_des=item_des)
 
 
-# @app.route('/yearreport_page', methods = ['GET'])
-# def yearreport_page():
-#     return render_template('yearreport.html')
 
-# @app.route('/yearreport', methods = ['GET'])
-# def yearreport():
-#     cursor = conn.cursor()
-#     #username = session.get('username')
-#     #year = 2024
-#     current_year = datetime.now().year
-
-
-#     cursor.execute('''
-#         SELECT COUNT(client)
-#         FROM Ordered
-#         WHERE YEAR(orderDate) = %s;
-#         ''', (current_year,))
-#     clients_served = cursor.fetchall()
-
-
-#     cursor.execute('''
-#         SELECT mainCategory, COUNT(ItemID) 
-#         FROM Item NATURAL JOIN DonatedBy
-#         WHERE YEAR(donateDate) = %s
-#         GROUP BY mainCategory;
-#         ''', (current_year,))
-#     categories_served = cursor.fetchall()
-
-#     cursor.execute('''
-#         SELECT DISTINCT iDescription
-#         FROM Item NATURAL JOIN ItemIn NATURAL JOIN Ordered
-#         WHERE YEAR(orderDate) = 2024
-#         ''')
-#     item_des = cursor.fetchall()
-    
-#     cursor.close()
-
-#     return render_template('yearreport.html', clients_served=clients_served, categories_served=categories_served, item_des=item_des)
 
 
 
