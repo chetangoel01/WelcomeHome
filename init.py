@@ -7,7 +7,6 @@ import os
 from datetime import datetime
 
 
-
 def validate_input(input_data):
     """
     Validates user input for XSS and SQL injection prevention.
@@ -147,11 +146,11 @@ def home():
 
 @app.route("/logout")
 def logout():
-    session.pop("username")
+    session.clear()
     return redirect("/login")
 
 
-# TODO: Find single item [ELI]
+# Find single item [ELI]
 # route to find item webpage
 @app.route("/find_single_item_page")
 def find_single_item_page():
@@ -182,7 +181,7 @@ def find_single_item():
     return render_template("find_single_item.html", pieces=pieces)
 
 
-# TODO: Find order items [ELI]
+# Find order items [ELI]
 @app.route("/find_order_items_page")
 def find_order_items_page():
     return render_template("find_order_items.html")
@@ -214,7 +213,7 @@ def find_order_items():
     return render_template("find_order_items.html", items=items)
 
 
-# TODO: Accept donation [ELI]
+# Accept donation [ELI]
 @app.route("/accept_donation_page")
 def accept_donation_page():
     return render_template("accept_donation.html")
@@ -317,7 +316,7 @@ def accept_donation():
     return render_template("accept_donation.html")
 
 
-# TODO: Start an order [IAN]
+# Start an order [IAN]
 
 
 @app.route("/start_order_page")
@@ -332,7 +331,7 @@ def start_order_page():
 def start_order():
     if request.method == "POST":
         # Retrieve form data
-        #staff_username = request.form["staff_username"]
+        # staff_username = request.form["staff_username"]
         client_username = request.form["client_username"]
 
         # Validate staff member
@@ -369,10 +368,11 @@ def start_order():
             if new_id not in orders:
                 break
 
-        session["start_order_numer"] = new_id
+        session["order_id"] = new_id
+        session["client_username"] = client_username
 
         # item_id = cursor.lastrowid
-        print(f"Your orderID is: {session.get('start_order_numer')}")
+        print(f"Your orderID is: {session.get('order_id')}")
 
         conn.commit()
         cursor.close()
@@ -384,32 +384,26 @@ def start_order():
 
 # TODO: Add to current order [IAN]
 
+
 def get_main_categories():
     query = "SELECT DISTINCT mainCategory FROM Category"
     with conn.cursor() as cursor:
         cursor.execute(query)
-        categories = [item['mainCategory'] for item in cursor.fetchall()]
+        categories = [item["mainCategory"] for item in cursor.fetchall()]
         return categories
-    
 
-# Function to fetch subcategories for a given main category
-def fetch_sub_categories_from_db(main_category):
-    query = "SELECT subCategory FROM Category WHERE mainCategory = %s"
-    with conn.cursor() as cursor:
-        cursor.execute(query, (main_category,))
-        return cursor.fetchall()
 
 # Route for the initial page
-@app.route('/add_to_order_page')
-def index():
-    return render_template('add_to_order.html', main_categories=get_main_categories())
+@app.route("/add_to_order_page")
+def order_page():
+    return render_template("add_to_order.html", main_categories=get_main_categories())
 
-@app.route('/add_to_order', methods=['GET', 'POST'])
+
+@app.route("/add_to_order", methods=["GET", "POST"])
 def add_to_order():
-    cursor = conn.cursor()
+    print(session)
 
     main_categories = get_main_categories()
-    print(main_categories)
 
     selected_main_category = None
 
@@ -417,35 +411,81 @@ def add_to_order():
     items = []
     message = None
 
-    if request.method == 'POST':
-        # Handle main category selection
-        selected_main_category = request.form.get('main_category')
-        print(selected_main_category)
+    if request.method == "POST":
+        selected_main_category = request.form.get("main_category")
         if selected_main_category:
-            cursor.execute(
-                "SELECT DISTINCT subCategory FROM Category WHERE mainCategory = %s",
-                (selected_main_category,)
-            )
-            subcategories = cursor.fetchall()
-            print(subcategories)
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "SELECT DISTINCT subCategory FROM Category WHERE mainCategory = %s",
+                    (selected_main_category,),
+                )
+                subcategories = [item["subCategory"] for item in cursor.fetchall()]
 
-        # Handle subcategory selection and retrieve items
-        selected_sub_category = request.form.get('sub_category')
+        selected_sub_category = request.form.get("sub_category")
         if selected_sub_category:
-            cursor.execute( "SELECT * FROM Item WHERE itemID NOT IN (SELECT itemID FROM ItemIn) \
-                           AND mainCategory = %s AND subCatecory = %s"
-            )
-            items = cursor.fetchall()
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "SELECT * FROM Item WHERE itemID NOT IN (SELECT itemID FROM ItemIn) \
+                    AND mainCategory = %s AND subCategory = %s",
+                    (selected_main_category, selected_sub_category),
+                )
+                items = cursor.fetchall()
 
-        # Handle itemID submission
-        item_id = request.form.get('item_id')
+        # Add selected item to the order
+        item_id = request.form.get("item_id")
         if item_id:
-            session['item_id'] = item_id
-            message = f"Item {item_id} has been added to the session."
+            order_id = session.get("order_id")  # Get the current order ID from session
+            if not order_id:
+                flash("No active order. Please start an order first.")
+                return render_template(
+                    "add_to_order.html",
+                    main_categories=main_categories,
+                    selected_main_category=selected_main_category,
+                    subcategories=subcategories,
+                    items=items,
+                    message=None,
+                )
 
-    conn.close()
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT * FROM Ordered WHERE orderID = %s", (order_id,))
+                if not cursor.fetchone():
+                    cursor.execute(
+                        """INSERT INTO Ordered VALUES (%s, %s, %s, %s, %s)""",
+                        (
+                            session.get("order_id"),
+                            datetime.today().date(),
+                            "new order created",
+                            session.get("username"),
+                            session.get("client_username"),
+                        ),
+                    )
+
+                cursor.execute(
+                    "INSERT INTO ItemIn (orderID, ItemID) VALUES (%s, %s)",
+                    (order_id, item_id),
+                )
+
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT i.ItemID, i.iDescription, i.photo, i.color, i.isNew, i.hasPieces, i.material, i.mainCategory, i.subCategory \
+                        FROM ItemIn ii \
+                        JOIN Item i ON ii.ItemID = i.ItemID \
+                        WHERE ii.orderID = %s",
+                        (order_id,),
+                    )
+                    order_items = cursor.fetchall()
+                    return render_template(
+                        "add_to_order.html",
+                        main_categories=main_categories,
+                        selected_main_category=selected_main_category,
+                        subcategories=subcategories,
+                        items=items,
+                        order_items=order_items,
+                        message=message,
+                    )
+
     return render_template(
-        'add_to_order.html',
+        "add_to_order.html",
         main_categories=main_categories,
         selected_main_category=selected_main_category,
         subcategories=subcategories,
@@ -454,115 +494,60 @@ def add_to_order():
     )
 
 
+# Year Report [IAN]
+@app.route("/yearreport_page", methods=["GET"])
+def yearreport_page():
+    return render_template("yearreport.html")
 
 
-
-# TODO: Year Report [IAN]
-
-@app.route('/yearreport', methods=['GET'])
+@app.route("/yearreport", methods=["GET"])
 def yearreport():
     cursor = conn.cursor()
+    # username = session.get('username')
+    # year = 2024
     current_year = datetime.now().year
 
-    # Query for the number of clients served
-    cursor.execute('''
+    cursor.execute(
+        """
         SELECT COUNT(client)
         FROM Ordered
         WHERE YEAR(orderDate) = %s;
-        ''', (current_year,))
-    clients_servedz = cursor.fetchall()#['client_count']
-    #clients_served = [item['mainCategory'] for item in cursor.fetchall()]
-    #print("Client served: ",clients_served)
-    #categories = [item['mainCategory'] for item in cursor.fetchall()]
-    clients_served = [(row['COUNT(client)']) for row in clients_servedz]
+        """,
+        (current_year,),
+    )
+    clients_served = cursor.fetchall()
 
-
-
-
-
-    # Query for categories served
-    cursor.execute('''
-        SELECT mainCategory, COUNT(ItemID)
+    cursor.execute(
+        """
+        SELECT mainCategory, COUNT(ItemID) 
         FROM Item NATURAL JOIN DonatedBy
         WHERE YEAR(donateDate) = %s
         GROUP BY mainCategory;
-        ''', (current_year,))
-    categories_servedz = cursor.fetchall()
-    categories_served = [(row['mainCategory'], row['COUNT(ItemID)']) for row in categories_servedz]
-    # categories_served = []
-    # for row in categories_servedz: ca(f"{row['category']} {row['count']}")
-    #categories_served = [item['mainCategory', 'COUNT(ItemID)'] for item in cursor.fetchall()]
-    #categories_served = [item['mainCategory'] for item in cursor.fetchall()]
-    print("category served: ",categories_served)
-    print("test1")
+        """,
+        (current_year,),
+    )
+    categories_served = cursor.fetchall()
 
-
-
-    # Query for item descriptions
-    cursor.execute('''
+    cursor.execute(
+        """
         SELECT DISTINCT iDescription
         FROM Item NATURAL JOIN ItemIn NATURAL JOIN Ordered
-        WHERE YEAR(orderDate) = %s
-        ''', (current_year,))
-    #item_desz = cursor.fetchall()
-    item_des = [item['iDescription'] for item in cursor.fetchall()]
-    print("item served: ",item_des)
-    
-
+        WHERE YEAR(orderDate) = 2024
+        """
+    )
+    item_des = cursor.fetchall()
 
     cursor.close()
 
-    # Render the template with the data
-    return render_template('yearreport.html', 
-                           clients_served=clients_served, 
-                           categories_served=categories_served, 
-                           item_des=item_des)
+    return render_template(
+        "yearreport.html",
+        clients_served=clients_served,
+        categories_served=categories_served,
+        item_des=item_des,
+    )
 
 
-# @app.route('/yearreport_page', methods = ['GET'])
-# def yearreport_page():
-#     return render_template('yearreport.html')
-
-# @app.route('/yearreport', methods = ['GET'])
-# def yearreport():
-#     cursor = conn.cursor()
-#     #username = session.get('username')
-#     #year = 2024
-#     current_year = datetime.now().year
-
-
-#     cursor.execute('''
-#         SELECT COUNT(client)
-#         FROM Ordered
-#         WHERE YEAR(orderDate) = %s;
-#         ''', (current_year,))
-#     clients_served = cursor.fetchall()
-
-
-#     cursor.execute('''
-#         SELECT mainCategory, COUNT(ItemID) 
-#         FROM Item NATURAL JOIN DonatedBy
-#         WHERE YEAR(donateDate) = %s
-#         GROUP BY mainCategory;
-#         ''', (current_year,))
-#     categories_served = cursor.fetchall()
-
-#     cursor.execute('''
-#         SELECT DISTINCT iDescription
-#         FROM Item NATURAL JOIN ItemIn NATURAL JOIN Ordered
-#         WHERE YEAR(orderDate) = 2024
-#         ''')
-#     item_des = cursor.fetchall()
-    
-#     cursor.close()
-
-#     return render_template('yearreport.html', clients_served=clients_served, categories_served=categories_served, item_des=item_des)
-
-
-
-
-
-# TODO: User's tasks [CHETAN]
+# User's tasks [CHETAN]
 @app.route("/userTasks_page", methods=["GET"])
 def userTasks_page():
     username = session.get("username")
@@ -641,7 +626,7 @@ def get_user_tasks():
     )
 
 
-# TODO: Rank system [CHETAN]
+# Rank system [CHETAN]
 @app.route("/volunteerRanking", methods=["GET"])
 def volunteerRankingPage():
     return render_template("volunteer_ranking.html")
@@ -676,7 +661,7 @@ def get_volunteer_ranking():
     return render_template("volunteer_ranking.html", ranking=ranking)
 
 
-# TODO: Update enabled [CHETAN]
+# Update enabled [CHETAN]
 @app.route("/deliveryStatus", methods=["GET"])
 def updatePage():
     return render_template("/delivery_status.html")
