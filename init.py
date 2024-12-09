@@ -383,7 +383,9 @@ def get_main_categories():
     query = "SELECT DISTINCT mainCategory FROM Category"
     with conn.cursor() as cursor:
         cursor.execute(query)
-        return cursor.fetchall()
+        categories = [item['mainCategory'] for item in cursor.fetchall()]
+        return categories
+    
 
 # Function to fetch subcategories for a given main category
 def fetch_sub_categories_from_db(main_category):
@@ -402,7 +404,10 @@ def add_to_order():
     cursor = conn.cursor()
 
     main_categories = get_main_categories()
+    print(main_categories)
+
     selected_main_category = None
+
     subcategories = []
     items = []
     message = None
@@ -410,12 +415,14 @@ def add_to_order():
     if request.method == 'POST':
         # Handle main category selection
         selected_main_category = request.form.get('main_category')
+        print(selected_main_category)
         if selected_main_category:
             cursor.execute(
                 "SELECT DISTINCT subCategory FROM Category WHERE mainCategory = %s",
                 (selected_main_category,)
             )
             subcategories = cursor.fetchall()
+            print(subcategories)
 
         # Handle subcategory selection and retrieve items
         selected_sub_category = request.form.get('sub_category')
@@ -447,44 +454,104 @@ def add_to_order():
 
 # TODO: Year Report [IAN]
 
-@app.route('/yearreport_page', methods = ['GET'])
-def yearreport_page():
-    return render_template('yearreport.html')
-
-@app.route('/yearreport', methods = ['GET'])
+@app.route('/yearreport', methods=['GET'])
 def yearreport():
     cursor = conn.cursor()
-    #username = session.get('username')
-    #year = 2024
     current_year = datetime.now().year
 
-
+    # Query for the number of clients served
     cursor.execute('''
         SELECT COUNT(client)
         FROM Ordered
         WHERE YEAR(orderDate) = %s;
         ''', (current_year,))
-    clients_served = cursor.fetchall()
+    clients_servedz = cursor.fetchall()#['client_count']
+    #clients_served = [item['mainCategory'] for item in cursor.fetchall()]
+    #print("Client served: ",clients_served)
+    #categories = [item['mainCategory'] for item in cursor.fetchall()]
+    clients_served = [(row['COUNT(client)']) for row in clients_servedz]
 
 
+
+
+
+    # Query for categories served
     cursor.execute('''
-        SELECT mainCategory, COUNT(ItemID) 
+        SELECT mainCategory, COUNT(ItemID)
         FROM Item NATURAL JOIN DonatedBy
         WHERE YEAR(donateDate) = %s
         GROUP BY mainCategory;
         ''', (current_year,))
-    categories_served = cursor.fetchall()
+    categories_servedz = cursor.fetchall()
+    categories_served = [(row['mainCategory'], row['COUNT(ItemID)']) for row in categories_servedz]
+    # categories_served = []
+    # for row in categories_servedz: ca(f"{row['category']} {row['count']}")
+    #categories_served = [item['mainCategory', 'COUNT(ItemID)'] for item in cursor.fetchall()]
+    #categories_served = [item['mainCategory'] for item in cursor.fetchall()]
+    print("category served: ",categories_served)
+    print("test1")
 
+
+
+    # Query for item descriptions
     cursor.execute('''
         SELECT DISTINCT iDescription
         FROM Item NATURAL JOIN ItemIn NATURAL JOIN Ordered
-        WHERE YEAR(orderDate) = 2024
-        ''')
-    item_des = cursor.fetchall()
+        WHERE YEAR(orderDate) = %s
+        ''', (current_year,))
+    #item_desz = cursor.fetchall()
+    item_des = [item['iDescription'] for item in cursor.fetchall()]
+    print("item served: ",item_des)
     
+
+
     cursor.close()
 
-    return render_template('yearreport.html', clients_served=clients_served, categories_served=categories_served, item_des=item_des)
+    # Render the template with the data
+    return render_template('yearreport.html', 
+                           clients_served=clients_served, 
+                           categories_served=categories_served, 
+                           item_des=item_des)
+
+
+# @app.route('/yearreport_page', methods = ['GET'])
+# def yearreport_page():
+#     return render_template('yearreport.html')
+
+# @app.route('/yearreport', methods = ['GET'])
+# def yearreport():
+#     cursor = conn.cursor()
+#     #username = session.get('username')
+#     #year = 2024
+#     current_year = datetime.now().year
+
+
+#     cursor.execute('''
+#         SELECT COUNT(client)
+#         FROM Ordered
+#         WHERE YEAR(orderDate) = %s;
+#         ''', (current_year,))
+#     clients_served = cursor.fetchall()
+
+
+#     cursor.execute('''
+#         SELECT mainCategory, COUNT(ItemID) 
+#         FROM Item NATURAL JOIN DonatedBy
+#         WHERE YEAR(donateDate) = %s
+#         GROUP BY mainCategory;
+#         ''', (current_year,))
+#     categories_served = cursor.fetchall()
+
+#     cursor.execute('''
+#         SELECT DISTINCT iDescription
+#         FROM Item NATURAL JOIN ItemIn NATURAL JOIN Ordered
+#         WHERE YEAR(orderDate) = 2024
+#         ''')
+#     item_des = cursor.fetchall()
+    
+#     cursor.close()
+
+#     return render_template('yearreport.html', clients_served=clients_served, categories_served=categories_served, item_des=item_des)
 
 
 
