@@ -96,7 +96,6 @@ def register():
     return render_template("register.html")
 
 
-# TODO: add register
 @app.route("/registerUser", methods=["POST"])
 def registerUser():
     username = request.form.get("username")
@@ -151,7 +150,6 @@ def logout():
 
 
 # Find single item [ELI]
-# route to find item webpage
 @app.route("/find_single_item_page")
 def find_single_item_page():
     return render_template("find_single_item.html")
@@ -317,8 +315,6 @@ def accept_donation():
 
 
 # Start an order [IAN]
-
-
 @app.route("/start_order_page")
 def start_order_page():
     username = session.get("username")
@@ -382,18 +378,7 @@ def start_order():
     return render_template("start_order.html")
 
 
-# TODO: Add to current order [IAN]
-
-
-def get_main_categories():
-    query = "SELECT DISTINCT mainCategory FROM Category"
-    with conn.cursor() as cursor:
-        cursor.execute(query)
-        categories = [item["mainCategory"] for item in cursor.fetchall()]
-        return categories
-
-
-# Route for the initial page
+# Add to current order [IAN]
 @app.route("/add_to_order_page")
 def order_page():
     return render_template("add_to_order.html", main_categories=get_main_categories())
@@ -401,12 +386,17 @@ def order_page():
 
 @app.route("/add_to_order", methods=["GET", "POST"])
 def add_to_order():
-    print(session)
 
-    main_categories = get_main_categories()
+    main_categories = []
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+        SELECT DISTINCT mainCategory FROM Category
+        """
+        )
+        main_categories = [item["mainCategory"] for item in cursor.fetchall()]
 
     selected_main_category = None
-
     subcategories = []
     items = []
     message = None
