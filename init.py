@@ -239,6 +239,15 @@ def accept_donation():
                 request.form.getlist("piece_notes"),
             )
         )
+        # Check that every field has an input
+        if not (donor_username and item_description and item_material and main_category and sub_category):
+            flash("Please fill out all required fields.")
+            return render_template("accept_donation.html")
+
+        for piece in pieces:
+            if not all(piece[:6]):  # Check all required piece fields
+                flash("Please fill out all required fields for each piece.")
+                return render_template("accept_donation.html")
 
         # Validate staff member
         cursor = conn.cursor()
