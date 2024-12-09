@@ -224,5 +224,6 @@ WHERE YEAR(orderDate) = currentYear;
 - **Add to Order**: Ian
 - **Year Report**: Ian
 - **Rank System**: Chetan
+- **User Task**: Chetan
 - **Update enabled**: Chetan
 - **Written report**: Eli, Ian
