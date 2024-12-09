@@ -10,7 +10,7 @@
   - `OS`: for salted password hashing (added security)
   - `re`: to prevent XSS and SQL injection
 - **Database**:
-  - SQL: for queries to mySQL database
+  - `SQL`: for queries to mySQL database
   - `pyMySQL`: For Python integration of the database into the application
 
 ## Changes to the Schema
